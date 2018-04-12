@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import numpy
 import numpy.random
 import matplotlib
@@ -82,11 +83,11 @@ if (options.nboots > 0):
     reptype = 'bootstrap'
     nreps = options.nboots
 if (options.nboots > 0 and options.nreps > 0):
-    print "Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling"
+    print("Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling")
 
 if (options.seed):
-    numpy.random.seed(options.seed) # setting the seed for independent sampling 
-    print "setting random number seed for generating samples as %d" % (options.seed)
+    numpy.random.seed(options.seed) # setting the seed for independent sampling
+    print("setting random number seed for generating samples as %d" % (options.seed))
 
 kB = 1.0
 a_k = options.K*numpy.array([1,1])
@@ -98,23 +99,23 @@ N_k = numpy.array(options.N_k) #N_k number of samples
 if (options.type == 'enthalpy'):
     analysis_type = 'dbeta-constP'
     if (P_k[0] != P_k[1]):
-        print "Pressures are not equal: can't test the ethalpy distribution"
+        print("Pressures are not equal: can't test the ethalpy distribution")
     if (T_k[0] == T_k[1]):
-        print "Temperatures are equal: can sometimes result in numerical instability"
+        print("Temperatures are equal: can sometimes result in numerical instability")
 elif (options.type == 'volume'):
     analysis_type = 'dpressure-constB'
     if (T_k[0] != T_k[1]):
-        print "Temperatures are not equal: can't test the volume distribution"
+        print("Temperatures are not equal: can't test the volume distribution")
     if (P_k[0] == P_k[1]):
-        print "Pressures are equal: can sometimes result in numerical instability"
+        print("Pressures are equal: can sometimes result in numerical instability")
 elif (options.type == 'jointEV'):
     analysis_type = 'dbeta-dpressure'
     if (T_k[0] == T_k[1]):
-        print "Temperatures are equal: can sometimes result in numerical instability"
+        print("Temperatures are equal: can sometimes result in numerical instability")
     if (P_k[0] == P_k[1]):
-        print "Pressures are equal: can sometimes result in numerical instability"
+        print("Pressures are equal: can sometimes result in numerical instability")
 else:
-    print "analysis type %s is not defined!" % (options.type)
+    print("analysis type %s is not defined!" % (options.type))
 
 N_max = numpy.max(N_k)
 
@@ -129,10 +130,10 @@ U_kn = numpy.zeros([K,N_max], float) # x_kn[k,n] is the energy of the sample at 
 #df     = -log [(2 pi/beta)^{1/2} a^{-1} beta^{-5/2} P^{-2} / (2 pi/beta)^{1/2} a^{-1} beta^{-5/2} P^{-2}]
 #df     = -log [(beta)^{-5/2} (P)^{-2} / (beta)^{-5/2} (P)^{-2}]
 df      = 2.5*numpy.log(beta_k[1]/beta_k[0]) + 2.0*numpy.log(P_k[1]/P_k[0]) # analytical result
-print "Analytical df = %.8f" % (df)
+print("Analytical df = %.8f" % (df))
 
 if (options.nreps > 0):
-    print "Now sampling %d sets of data . . . could also take a bit" % (nreps)
+    print("Now sampling %d sets of data . . . could also take a bit" % (nreps))
 
 reps = []
 
@@ -143,7 +144,7 @@ elif (reptype == 'bootstrap'):
 
 for n in range(ncount):
     if (n%10 == 0 and n>0):
-        print "Finished generating %d data sets . . ." % (n)
+        print("Finished generating %d data sets . . ." % (n))
 
     # generate N_k[k] independent samples from (x,V)                   
     V = 1; # start with arbitrary volume     
@@ -165,7 +166,7 @@ for n in range(ncount):
         for n in range(N_k[k]):  # gibbs sampling to get x,V samples:
             
             if (n%10000) == 0:
-                print "Set %d: Generated up through sample %d" % (k,n)
+                print("Set %d: Generated up through sample %d" % (k,n))
             # for the x coordinate
             gx = numpy.random.normal(0, 1, gtau)
 

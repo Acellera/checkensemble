@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import numpy
 import numpy.random
 import matplotlib
@@ -83,11 +84,11 @@ if (options.nboots > 0):
     reptype = 'bootstrap'
     nreps = options.nboots
 if (options.nboots > 0 and options.nreps > 0):
-    print "Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling"
+    print("Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling")
 
 if (options.seed):
-    numpy.random.seed(options.seed) # setting the seed for independent sampling 
-    print "setting random number seed for generating samples as %d" % (options.seed)
+    numpy.random.seed(options.seed) # setting the seed for independent sampling
+    print("setting random number seed for generating samples as %d" % (options.seed))
 
 kB = 1.0
 a_k = options.K*numpy.array([1,1])
@@ -99,23 +100,23 @@ N_k = numpy.array(options.N_k) #N_k number of samples
 if (options.type == 'helmholtz'):
     analysis_type = 'dbeta-constmu'
     if (mu_k[0] != mu_k[1]):
-        print "Chemical potentials are not equal: can't test the ethalpy distribution"
+        print("Chemical potentials are not equal: can't test the ethalpy distribution")
     if (T_k[0] == T_k[1]):
-        print "Temperatures are equal: can sometimes result in numerical instability"
+        print("Temperatures are equal: can sometimes result in numerical instability")
 elif (options.type == 'number'):
     analysis_type = 'dmu-constB'
     if (T_k[0] != T_k[1]):
-        print "Temperatures are not equal: can't test the volume distribution"
+        print("Temperatures are not equal: can't test the volume distribution")
     if (mu_k[0] == mu_k[1]):
-        print "Chemical potentials are equal: can sometimes result in numerical instability"
+        print("Chemical potentials are equal: can sometimes result in numerical instability")
 elif (options.type == 'jointEN'):
     analysis_type = 'dbeta-dmu'
     if (T_k[0] == T_k[1]):
-        print "Temperatures are equal: can sometimes result in numerical instability"
+        print("Temperatures are equal: can sometimes result in numerical instability")
     if (mu_k[0] == mu_k[1]):
-        print "Chemical potentials are equal: can sometimes result in numerical instability"
+        print("Chemical potentials are equal: can sometimes result in numerical instability")
 else:
-    print "analysis type %s is not defined!" % (options.type)
+    print("analysis type %s is not defined!" % (options.type))
 
 N_max = numpy.max(N_k)
 
@@ -137,10 +138,10 @@ U_kn = numpy.zeros([K,N_max], float) # x_kn[k,n] is the energy of the sample at 
 xv = numpy.sqrt(2*numpy.pi/(beta_k*K_k))*numpy.exp(beta_k*mu_k)
 f  = -numpy.log(xv/(1-xv))
 df = f[1]-f[0]
-print "Analytical df = %.8f" % (df)
+print("Analytical df = %.8f" % (df))
 
 if (options.nreps > 0):
-    print "Now sampling %d sets of data . . . could also take a bit" % (nreps)
+    print("Now sampling %d sets of data . . . could also take a bit" % (nreps))
 
 reps = []
 
@@ -151,7 +152,7 @@ elif (reptype == 'bootstrap'):
 
 for n in range(ncount):
     if (n%10 == 0 and n>0):
-        print "Finished generating %d data sets . . ." % (n)
+        print("Finished generating %d data sets . . ." % (n))
 
     # generate independent samples from (x,N).  
     # Pick samples from N, and then from x given N 
@@ -164,7 +165,7 @@ for n in range(ncount):
         for n in range(N_k[k]):  # gibbs sampling to get x,N samples:
             
             if (n%10000) == 0:
-                print "Set %d: Generated up through sample %d" % (k,n)
+                print("Set %d: Generated up through sample %d" % (k,n))
             # for the x coordinate
 
             p = numpy.exp(beta_k[k]*mu_k[k])*numpy.sqrt(2*numpy.pi/beta_k[k]*K_k[k])     

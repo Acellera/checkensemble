@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import numpy
 import numpy.random
 import matplotlib
@@ -71,11 +72,11 @@ if (options.nboots > 0):
     reptype = 'bootstrap'
     ngen = 1
 if (options.nboots > 0 and options.nreps > 0):
-    print "Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling"
+    print("Can't do both bootstrap sampling and independence sampling: defaulting to bootstrap sampling")
     
 if (options.seed):
-    numpy.random.seed(options.seed) # setting the seed for independent sampling 
-    print "setting random number seed for generating samples as %d" % (options.seed)
+    numpy.random.seed(options.seed) # setting the seed for independent sampling
+    print("setting random number seed for generating samples as %d" % (options.seed))
 
 kB = 1.0
 D = options.D
@@ -89,22 +90,22 @@ sigma_k = (beta_k * K_k)**(-0.5)
 N_max = numpy.max(N_k)
 
 if (T_k[0] == T_k[1]):
-    print "Temperatures are equal: can sometimes result in numerical instability"
+    print("Temperatures are equal: can sometimes result in numerical instability")
 
 K = len(beta_k)
 x_kn = numpy.zeros([K,N_max], float) # x_kn[k,n] is the coordinate x of independent snapshot n of simulation k   
 U_kn = numpy.zeros([K,N_max], float) # x_kn[k,n] is the energy of the sample at x_kn[k,n]
 
 df = D*0.5*numpy.log(beta_k[1]/beta_k[0]) # analytical result
-print "Analytical df = %.8f" % (df)
+print("Analytical df = %.8f" % (df))
 
-print "Now sampling %d sets of data . . . could also take a bit" % (ngen)
+print("Now sampling %d sets of data . . . could also take a bit" % (ngen))
 
 reps = []
 
 for n in range(ngen):
     if (n%10 == 0):
-        print "Finished generating %d sets . . ." % (n)
+        print("Finished generating %d sets . . ." % (n))
     U_kn[:,:] = 0
     for k in range(K):
         for d in range(D):

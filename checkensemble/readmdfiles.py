@@ -30,10 +30,11 @@
 #===================================================================================================
 # IMPORTS
 #===================================================================================================
+
+from __future__ import print_function
 import pdb
 import numpy
 import timeseries
-from checkensemble import *
 import optparse, sys
 from optparse import OptionParser
 
@@ -59,29 +60,29 @@ def read_flatfile(lines,type,N_max):
             elements = line.split()
             numcol = len(elements)
             if (numcol == 0):
-                print "Error: No data for data point %d" % (N) 
+                print("Error: No data for data point %d" % (N))
                 sys.exit()
             elif (numcol == 1):     
                 if (type in onlyE):
                     U_n[N] = float(elements[0])                    
                 elif (type == 'volume'):
-                    V_n[N] = float(elements[0])                    
+                    V_n[N] = float(elements[0])
                 elif (type == 'number'):
-                    N_n[N] = float(elements[0])                    
+                    N_n[N] = float(elements[0])
                 else:
-                    print "Error: asking for test requiring multiple variables (%s) but only provided one column of data" % (type)
+                    print("Error: asking for test requiring multiple variables (%s) but only provided one column of data" % (type))
                     sys.exit()
             elif (numcol == 2):
                 if type in requireV and type != 'volume':
                     U_n[N] = float(elements[0])                    
                     V_n[N] = float(elements[1])                    
                 elif type in requireN and type != 'number':
-                    U_n[N] = float(elements[0])                    
-                    N_n[N] = float(elements[1])                    
+                    U_n[N] = float(elements[0])
+                    N_n[N] = float(elements[1])
                 else:
-                    print "Error: asking for test (%s) incompatible with two columns of data" % (type)
+                    print("Error: asking for test (%s) incompatible with two columns of data" % (type))
             elif (numcol > 2):
-                print "Error: there is no test that required the provided %d columns of data" % (numcol)
+                print("Error: there is no test that required the provided %d columns of data" % (numcol))
                 sys.exit()
             N += 1 
 
@@ -241,31 +242,31 @@ def getefficiency(N_k,U_kn,V_kn,N_kn,type):
     if (type != 'volume') and (type != 'number'):
         for k in range(K):
             ge[k] = timeseries.statisticalInefficiency(U_kn[k,0:N_k[k]],fast=False)
-        print "Calculating ["
+        print("Calculating [")
         for k in range(K):
-            print " %.3f " % (ge[k])
-        print "] as the statistical inefficiencies of the energy"
+            print(" %.3f " % (ge[k]))
+        print("] as the statistical inefficiencies of the energy")
     if type in requireV:
         for k in range(K):
             gv[k] = timeseries.statisticalInefficiency(V_kn[k,0:N_k[k]],fast=False)
-        print "Calculating ["
+        print("Calculating [")
         for k in range(K):
-            print " %.3f " % (gv[k])
-        print "] as the statistical inefficiencies of the volume"
+            print(" %.3f " % (gv[k]))
+        print("] as the statistical inefficiencies of the volume")
     if type in requireN:
         for k in range(K):
             gn[k] = timeseries.statisticalInefficiency(N_kn[k,0:N_k[k]],fast=False)
-        print "Calculating ["
+        print("Calculating [")
         for k in range(K):
-            print " %.3f " % (gn[k])
-        print "] as the statistical inefficiencies of the particle number"
+            print(" %.3f " % (gn[k]))
+        print("] as the statistical inefficiencies of the particle number")
 
     for k in range(K):
         g[k] = numpy.max([ge[k],gv[k],gn[k]])
-    print "Using ["
+    print("Using [")
     for k in range(K):
-        print " %.3f " % (g[k])
-    print "] as the statistical inefficiencies"
+        print(" %.3f " % (g[k]))
+    print("] as the statistical inefficiencies")
     return g
 
 def subsample(N_k,U_kn,V_kn,N_kn,g,type):
@@ -287,8 +288,8 @@ def subsample(N_k,U_kn,V_kn,N_kn,g,type):
         if (type in requireN):
             indices = timeseries.subsampleCorrelatedData(N_kn[k,0:N_k[k]],g[k])
             tempspace = N_kn[k,indices].copy()
-            N_k_sampled[k] = numpy.size(indices) 
+            N_k_sampled[k] = numpy.size(indices)
             N_kn[k,0:N_k_sampled[k]] = tempspace[0:N_k_sampled[k]]
-        print "data has been subsampled using the statistical inefficiencies"
+        print("data has been subsampled using the statistical inefficiencies")
         g[k] = 1.0
         N_k[k] = N_k_sampled[k]

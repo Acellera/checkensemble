@@ -31,6 +31,7 @@
 # IMPORTS
 #===================================================================================================
 
+from __future__ import print_function
 import numpy
 import timeseries
 import checkensemble
@@ -68,7 +69,7 @@ parser.add_option("--filetype", dest="filetype", type = "string", default='flatf
 (options, args) = parser.parse_args()
 
 if options.metafile is None:
-    print "\nQuitting: No files were input!\n"
+    print("\nQuitting: No files were input!\n")
     sys.exit()
 
 filetypes_supported = ['flatfile','gromacs','charmm','desmond']
@@ -80,12 +81,12 @@ alltypes = onlyE + requireV + requireN
 type = options.type
 
 if type in requireN:
-    print "Error: replica exchange testing not implemented for grand canonical ensemble yet."
+    print("Error: replica exchange testing not implemented for grand canonical ensemble yet.")
 
 if not (type in alltypes):
-    print "type of energy %s isn't defined!" % (type)
-    print "Must be one of ", 
-    print alltypes
+    print("type of energy %s isn't defined!" % (type))
+    print("Must be one of ", end=' ') 
+    print(alltypes)
     sys.exit()
 
 if type in onlyE:
@@ -103,10 +104,10 @@ elif (type == 'number'):
 elif (type == 'jointEN'):
     analysis_type = 'dbeta-dmu'
 else:
-    print "analysis type %s not defined: I'll go with total energy" % (type)
+    print("analysis type %s not defined: I'll go with total energy" % (type))
     analysis_type = 'dbeta-constV'
 if (not(options.useg == 'scale' or options.useg == 'subsample')):
-    print "Error: for -u, only options \'scale\' and \'subsample\' allowed"
+    print("Error: for -u, only options \'scale\' and \'subsample\' allowed")
     sys.exit()
 
 #===================================================================================================
@@ -130,20 +131,20 @@ for line in lines:
         datafiles.append(elements[0])
         if analysis_type == 'dbeta-constV':
             if (numcol != 2):
-                print "Warning! Expecting one temperature entry, getting a different number (%d) of entries!" % (printcol)
+                print("Warning! Expecting one temperature entry, getting a different number (%d) of entries!" % (printcol))
             T_k.append(float(elements[1]))
         elif analysis_type == 'dbeta-constP':
             if (numcol != 3):
-                print "Warning! Expecting one temperature and on pressure entry, getting a different number (%d) of entries!" % (printcol)
+                print("Warning! Expecting one temperature and on pressure entry, getting a different number (%d) of entries!" % (printcol))
             T_k.append(float(elements[1]))
             P_k.append(float(elements[2]))
         elif analysis_type == 'dpressure-constB':
             if (numcol != 2):
-                print "Warning! Expecting one pressure entry, getting a different number (%d) of entries!" % (printcol)
+                print("Warning! Expecting one pressure entry, getting a different number (%d) of entries!" % (printcol))
             P_k.append(float(elements[1]))
         elif analysis_type == 'dbeta-dpressure':
             if (numcol != 3):
-                print "Warning! Expecting one temperature and on pressure entry, getting a different number (%d) of entries!" % (printcol)
+                print("Warning! Expecting one temperature and on pressure entry, getting a different number (%d) of entries!" % (printcol))
             T_k.append(float(elements[1]))
             P_k.append(float(elements[2]))
 
@@ -163,43 +164,43 @@ bLinearFit = options.bLinearFit
 figname = options.figname
 
 if not (options.filetype in filetypes_supported):
-    print "Error: for -filetype, I currently only know about filetypes",
-    print filetypes_supported
+    print("Error: for -filetype, I currently only know about filetypes", end=' ')
+    print(filetypes_supported)
     sys.exit()    
 
 if type[0:5] == 'joint':
     bLinearFit = False
     bNonLinearFit = False
     bMaxLikelhood = True
-    print "For joint simulations, can only run maximum likelihood, overwriting other options"
+    print("For joint simulations, can only run maximum likelihood, overwriting other options")
 
 if (verbose):
-    print "verbosity is %s" % (str(verbose))
-    print "Energy type is %s" % (type)
+    print("verbosity is %s" % (str(verbose)))
+    print("Energy type is %s" % (type))
     for k in range(K):
-        print "%dth temperature is %f" % (k,T_k[k])
+        print("%dth temperature is %f" % (k,T_k[k]))
         if ((type == 'volume') or (type == 'enthalpy') or (type == 'jointPV')):                
-            print "%dth pressure is %f" % (k,P_k[k])
-    print "Number of bootstraps is %d" % (nboots)
-    print "Number of bins (not used for maximum likelihood) is %d" % (nbins)
+            print("%dth pressure is %f" % (k,P_k[k]))
+    print("Number of bootstraps is %d" % (nboots))
+    print("Number of bins (not used for maximum likelihood) is %d" % (nbins))
 
     if (bMaxLikelihood):
-        print "Generating maximum likelihood statistics"
+        print("Generating maximum likelihood statistics")
     else:
-        print "Not generating maximum likelihood statistics"
+        print("Not generating maximum likelihood statistics")
 
     if (bLinearFit):
-        print "Generating linear fit statistics"
+        print("Generating linear fit statistics")
     else:
-        print "Not generating linear fit statistics"
+        print("Not generating linear fit statistics")
 
     if (bNonLinearFit):
-        print "Generating nonlinear fit statistics"
+        print("Generating nonlinear fit statistics")
     else:
-        print "Not generating nonlinear fit statistics"
+        print("Not generating nonlinear fit statistics")
 
 
-    print "Figures will be named %s" % (figname)    
+    print("Figures will be named %s" % (figname))    
 
 # Shouldn't need to modify below this for standard usage 
 # ------------------------
@@ -214,7 +215,7 @@ filenames = []
 for k in range(K):
     filename = datafiles[k]
     filenames.append(filename)
-    print "checking size of file \#%d named %s..." % (k+1,filenames[k])    
+    print("checking size of file \#%d named %s..." % (k+1,filenames[k]))    
     infile = open(filename, 'r')
     lines = infile.readlines()
     infile.close()
@@ -227,7 +228,7 @@ N_kn = numpy.zeros([K,N_max], dtype=numpy.float64) # N_kn[k,n], but replica exch
 
 for k in range(K):
     # Read contents of file into memory.
-    print "Reading %s..." % filenames[k]
+    print("Reading %s..." % filenames[k])
     infile = open(filenames[k], 'r')
     lines = infile.readlines()
     infile.close()
@@ -245,26 +246,26 @@ for k in range(K):
         U_kn[k,:] *= kJperkcal
         V_kn[k,:] *= nm3perA3
     else:
-        print "The file type %s isn't defined!" % (options.filetype)
+        print("The file type %s isn't defined!" % (options.filetype))
         sys.exit()
 
 # compute correlation times for the data
 # Determine indices of uncorrelated samples from potential autocorrelation analysis at state k.
-print "Now determining correlation time"
+print("Now determining correlation time")
 if (options.efficiency is None):
     g = readmdfiles.getefficiency(N_k,U_kn,V_kn,N_kn,type)
 else:
     g = options.efficiency*numpy.ones(K)
-    print "statistical inefficiency taken from input options is %f" % (options.efficiency)
+    print("statistical inefficiency taken from input options is %f" % (options.efficiency))
 if (options.useg == 'subsample'):
     readmdfiles.subsample(N_k,U_kn,V_kn,N_kn,g,type)
 else:
-    print "statistical efficiencies used to scale the statistical uncertained determined from all data"
+    print("statistical efficiencies used to scale the statistical uncertained determined from all data")
 figname = options.figname
 title = options.figname
 
 for k in range(K-1):
-    print 'Now analyzing replicas %d and %d' % (k,k+1)
+    print('Now analyzing replicas %d and %d' % (k,k+1))
     twoN = numpy.array([N_k[k],N_k[k+1]])
     if (type in onlyE) or (type == 'enthalpy') or (type == 'jointEV'):
         twoT = numpy.array([T_k[k],T_k[k+1]])
