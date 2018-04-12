@@ -1236,6 +1236,11 @@ def ProbabilityAnalysis(N_k,type='dbeta-constV',T_k=None,P_k=None,mu_k=None,U_kn
     print "Uncertainty in quantity is %.5f" % (ddf)
     print "Assuming this is negligible compared to sampling error at individual points" 
 
+    # A dictionary to store results
+    results = {}
+    if check_twodtype(type):
+        results['true_slope'] = float(dp)
+
     if (bMaxwell):  # only applies for kinetic energies
         print "Now fitting to a Maxwell-Boltzmann distribution"        
         for k in range(2):
@@ -1247,23 +1252,29 @@ def ProbabilityAnalysis(N_k,type='dbeta-constV',T_k=None,P_k=None,mu_k=None,U_kn
         fn = figname + '_linear'
         (fitvals,dfitvals) = LinFit(bins,N_k,dp,const,v,df=df,name=title,figname=fn,bGraph=bGraph,analytic_uncertainty=True,g=g,type=type,vunits=vunits)
         Print1DStats('Linear Fit Analysis (analytical error)',type,fitvals,convertback,dp,const,dfitvals=dfitvals)
+        results['linear_fit_slope'] = fitvals[1]
+        results['linear_fit_slope_error'] = dfitvals[1]
 
     if (bNonLinearFit and check_twodtype(type)): 
         print "Now computing the nonlinear fit parameters" 
         fn = figname + '_nonlinear'
         (fitvals,dfitvals) = NonLinFit(bins,N_k,dp,const,v,df=df,name=title,figname=fn,bGraph=bGraph,analytic_uncertainty=True,g=g,type=type,vunits=vunits)
         Print1DStats('Nonlinear Fit Analysis (analytical error)',type,fitvals,convertback,dp,const,dfitvals=dfitvals)
+        results['nonlinear_fit_slope'] = fitvals[1]
+        results['nonlinear_fit_slope_error'] = dfitvals[1]
 
     if (bMaxLikelihood):
         print "Now computing the maximum likelihood parameters" 
         (fitvals,dfitvals) = MaxLikeParams(N_k,dp,const,v,df=df,analytic_uncertainty=True,g=numpy.average(g))
         if (check_twodtype(type)):
             Print1DStats('Maximum Likelihood Analysis (analytical error)',type,fitvals,convertback,dp,const,dfitvals=dfitvals)
-        else: 
+            results['maximu_likehood_slope'] = fitvals[1]
+            results['maximu_likehood_slope_error'] = dfitvals[1]
+        else:
             Print2DStats('2D-Maximum Likelihood Analysis (analytical error)',type,fitvals,kB,convertback,dp,const,dfitvals=dfitvals)
 
     if (reptype is None):
-        return
+        return results
 
     if (reptype == 'bootstrap'):
         nreps = nboots
@@ -1335,15 +1346,22 @@ def ProbabilityAnalysis(N_k,type='dbeta-constV',T_k=None,P_k=None,mu_k=None,U_kn
 
     if (bLinearFit and check_twodtype(type)):
         Print1DStats('Linear Fit Analysis',type,[linvals[0],linvals[1]],convertback,dp,const)
+        results[reptype+'_linear_fit_slope'] = numpy.mean(linvals[1])
+        results[reptype+'_linear_fit_slope_error'] = numpy.std(linvals[1])
         
     if (bNonLinearFit and check_twodtype(type)):
         Print1DStats('Nonlinear Fit Analysis',type,[nlvals[0],nlvals[1]],convertback,dp,const)
+        results[reptype+'_nonlinear_fit_slope'] = numpy.mean(nlvals[1])
+        results[reptype+'_nonlinear_fit_slope_error'] = numpy.std(nlvals[1])
 
     if (bMaxLikelihood):
         if check_twodtype(type):
             Print1DStats('Maximum Likelihood Analysis',type,[mlvals[0],mlvals[1]],convertback,dp,const)
+            results[reptype+'_maximum_likehood_slope'] = numpy.mean(mlvals[1])
+            results[reptype+'_maximum_likehood_slope_error'] = numpy.std(mlvals[1])
         else:
             Print2DStats('2D-Maximum Likelihood Analysis',type,[mlvals[0],mlvals[1],mlvals[2]],kB,convertback,dp,const)
-    return
-    
+
+    return results
+
 # to do: fix the drawing directions so that correct data has the legend in the right place.
